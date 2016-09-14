@@ -20,5 +20,83 @@
 </description>
     </item>
     
+    <item>
+      <title></title>
+      <link>https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/</guid>
+      <description>
+
+&lt;h1 id=&#34;storm-ui解析&#34;&gt;storm UI解析&lt;/h1&gt;
+
+&lt;p&gt;@(Storm)[storm]&lt;/p&gt;
+
+&lt;h2 id=&#34;cluster-summary&#34;&gt;Cluster Summary&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;./1472743930681.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;topology代码设置&#34;&gt;Topology代码设置&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;TopologyBuilder topologyBuilder = new TopologyBuilder();
+		
+		//不设置task数量时，task数量=executors数量
+		topologyBuilder.setSpout(&amp;quot;sentenceSpout&amp;quot;, new RandomSentenceSpout(),2).setNumTasks(4);
+		topologyBuilder.setBolt(&amp;quot;sentenceSplitBolt&amp;quot;, new SplitSentenceBolt(),2).setNumTasks(3).shuffleGrouping(&amp;quot;sentenceSpout&amp;quot;);
+		topologyBuilder.setBolt(&amp;quot;countBolt&amp;quot;, new WordCountBolt(),4).setNumTasks(6).fieldsGrouping(&amp;quot;sentenceSplitBolt&amp;quot;, new Fields(&amp;quot;word&amp;quot;));
+		
+		
+		Config conf = new Config();
+		conf.setDebug(true);
+		
+		if(args != null &amp;amp;&amp;amp; args.length &amp;gt; 0){
+			conf.setNumWorkers(3);
+			StormSubmitter.submitTopology(args[0], conf, topologyBuilder.createTopology());
+		}else{
+			conf.setMaxTaskParallelism(10);
+			
+			LocalCluster localCluster = new LocalCluster();
+			localCluster.submitTopology(&amp;quot;word-count&amp;quot;, conf, topologyBuilder.createTopology());
+			
+			Thread.sleep(10000);
+			localCluster.shutdown();
+		}
+	}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ui界面&#34;&gt;UI界面&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;./1472961269432.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Num workers = 3
+&amp;gt; 通过conf.setNumWorkers(3);进行设置&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Num executors = 11&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;		topologyBuilder.setSpout(&amp;quot;sentenceSpout&amp;quot;, new RandomSentenceSpout(),2).setNumTasks(4);
+		topologyBuilder.setBolt(&amp;quot;sentenceSplitBolt&amp;quot;, new SplitSentenceBolt(),2).setNumTasks(3).shuffleGrouping(&amp;quot;sentenceSpout&amp;quot;);
+		topologyBuilder.setBolt(&amp;quot;countBolt&amp;quot;, new WordCountBolt(),4).setNumTasks(6).fieldsGrouping(&amp;quot;sentenceSplitBolt&amp;quot;, new Fields(&amp;quot;word&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;sentenceSpout 并发度是2
+   sentenceSplitBolt 并发度2
+    countBolt 并发度4
+   另外每一个worker都会启动一个executor，用来执行acker任务，上面设置有3个worker
+2+2+4+3=11&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Num tasks = 16
+task数量可以通过设置spout和bolt的numTasks数量来设置，不设置时，缺省一个executor会生成一个task,executor数量&amp;lt;=task数量，在这里这是task数量，主要是为了后续rebalance来用的
+sentenceSpout 任务数是2
+sentenceSplitBolt 任务数2
+countBolt 任务数4
+另外每一个worker会生成acker任务，本例中有个3个worker
+2+2+4+3=11&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>

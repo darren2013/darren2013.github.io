@@ -3,26 +3,22 @@
 <head prefix="og: http://ogp.me/ns#">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-  <meta property="og:title" content=" good to great &middot;  Darren&#39;s Note" />
+  <meta property="og:title" content="  &middot;  Darren&#39;s Note" />
   
   <meta name="theme-color" content="#hexcolor" />
  
   <meta property="og:site_name" content="Darren&#39;s Note" />
-  <meta property="og:url" content="https://darren2013.github.io/post/good-to-great/" />
+  <meta property="og:url" content="https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/" />
   
   
   <meta property="og:type" content="article" />
   
-  <meta property="og:article:published_time" content="2016-08-22T09:34:23&#43;08:00" />
-  
-  <meta property="og:article:tag" content="Development" />
-  
-  <meta property="og:article:tag" content="golang" />
+  <meta property="og:article:published_time" content="0001-01-01T00:00:00Z" />
   
   
 
   <title>
-     good to great &middot;  Darren&#39;s Note
+      &middot;  Darren&#39;s Note
   </title>
 
   <link rel="stylesheet" href="https://darren2013.github.io/css/bootstrap.min.css" />
@@ -77,25 +73,89 @@
 
 <article>
   <header>
-    <h1 class="text-primary">good to great</h1>
+    <h1 class="text-primary"></h1>
     <div class="post-meta clearfix">
       <div class="post-date pull-left">
         Posted on
-        <time datetime="2016-08-22T09:34:23&#43;08:00">
-          Aug 22, 2016
+        <time datetime="0001-01-01T00:00:00Z">
+          Jan 1, 0001
         </time>
       </div>
       <div class="pull-right">
-        
-        <span class="post-tag small"><a href="https://darren2013.github.io//tags/development">#Development</a></span>
-        
-        <span class="post-tag small"><a href="https://darren2013.github.io//tags/golang">#golang</a></span>
         
       </div>
     </div>
   </header>
   <section>
-    <p>I read <strong>Good to Great in January 2016</strong>. An awesome read sharing detailed analysis on how good companies became great.</p>
+    
+
+<h1 id="storm-ui解析">storm UI解析</h1>
+
+<p>@(Storm)[storm]</p>
+
+<h2 id="cluster-summary">Cluster Summary</h2>
+
+<p><img src="./1472743930681.png" alt="Alt text" /></p>
+
+<h2 id="topology代码设置">Topology代码设置</h2>
+
+<pre><code class="language-java">TopologyBuilder topologyBuilder = new TopologyBuilder();
+		
+		//不设置task数量时，task数量=executors数量
+		topologyBuilder.setSpout(&quot;sentenceSpout&quot;, new RandomSentenceSpout(),2).setNumTasks(4);
+		topologyBuilder.setBolt(&quot;sentenceSplitBolt&quot;, new SplitSentenceBolt(),2).setNumTasks(3).shuffleGrouping(&quot;sentenceSpout&quot;);
+		topologyBuilder.setBolt(&quot;countBolt&quot;, new WordCountBolt(),4).setNumTasks(6).fieldsGrouping(&quot;sentenceSplitBolt&quot;, new Fields(&quot;word&quot;));
+		
+		
+		Config conf = new Config();
+		conf.setDebug(true);
+		
+		if(args != null &amp;&amp; args.length &gt; 0){
+			conf.setNumWorkers(3);
+			StormSubmitter.submitTopology(args[0], conf, topologyBuilder.createTopology());
+		}else{
+			conf.setMaxTaskParallelism(10);
+			
+			LocalCluster localCluster = new LocalCluster();
+			localCluster.submitTopology(&quot;word-count&quot;, conf, topologyBuilder.createTopology());
+			
+			Thread.sleep(10000);
+			localCluster.shutdown();
+		}
+	}
+</code></pre>
+
+<h2 id="ui界面">UI界面</h2>
+
+<p><img src="./1472961269432.png" alt="Alt text" /></p>
+
+<ul>
+<li><p>Num workers = 3
+&gt; 通过conf.setNumWorkers(3);进行设置</p></li>
+
+<li><p>Num executors = 11</p>
+
+<pre><code class="language-java">		topologyBuilder.setSpout(&quot;sentenceSpout&quot;, new RandomSentenceSpout(),2).setNumTasks(4);
+		topologyBuilder.setBolt(&quot;sentenceSplitBolt&quot;, new SplitSentenceBolt(),2).setNumTasks(3).shuffleGrouping(&quot;sentenceSpout&quot;);
+		topologyBuilder.setBolt(&quot;countBolt&quot;, new WordCountBolt(),4).setNumTasks(6).fieldsGrouping(&quot;sentenceSplitBolt&quot;, new Fields(&quot;word&quot;));
+</code></pre></li>
+</ul>
+
+<p>sentenceSpout 并发度是2
+   sentenceSplitBolt 并发度2
+    countBolt 并发度4
+   另外每一个worker都会启动一个executor，用来执行acker任务，上面设置有3个worker
+2+2+4+3=11</p>
+
+<ul>
+<li>Num tasks = 16
+task数量可以通过设置spout和bolt的numTasks数量来设置，不设置时，缺省一个executor会生成一个task,executor数量&lt;=task数量，在这里这是task数量，主要是为了后续rebalance来用的
+sentenceSpout 任务数是2
+sentenceSplitBolt 任务数2
+countBolt 任务数4
+另外每一个worker会生成acker任务，本例中有个3个worker
+2+2+4+3=11</li>
+</ul>
 
   </section>
   <footer>
@@ -123,10 +183,10 @@
     </section>
     <ul class="pager">
       
-      <li class="previous"><a href="https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/"><span aria-hidden="true">&larr;</span> Older</a></li>
+      <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
       
       
-      <li class="next disabled"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+      <li class="next"><a href="https://darren2013.github.io/post/good-to-great/">Newer <span aria-hidden="true">&rarr;</span></a></li>
       
     </ul>
   </footer>

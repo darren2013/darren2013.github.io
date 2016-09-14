@@ -95,6 +95,32 @@
 </article>
 
   
+  <hr/>
+  <article>
+  <header>
+    <h2><a href="https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/"></a></h2>
+    <div class="post-meta clearfix">
+      <div class="post-date pull-left">
+        Posted on
+        <time datetime="0001-01-01T00:00:00Z">
+          Jan 1, 0001
+        </time>
+      </div>
+    </div>
+  </header>
+  <div>
+    storm UI解析 @(Storm)[storm] Cluster Summary Topology代码设置 TopologyBuilder topologyBuilder = new TopologyBuilder(); //不设置task数量时，task数量=executors数量 topologyBuilder.setSpout(&quot;sentenceSpout&quot;, new RandomSentenceSpout(),2).setNumTasks(4); topologyBuilder.setBolt(&quot;sentenceSplitBolt&quot;, new SplitSentenceBolt(),2).setNumTasks(3).shuffleGrouping(&quot;sentenceSpout&quot;); topologyBuilder.setBolt(&quot;countBolt&quot;, new WordCountBolt(),4).setNumTasks(6).fieldsGrouping(&quot;sentenceSplitBolt&quot;, new Fields(&quot;word&quot;)); Config conf = new Config(); conf.setDebug(true); if(args != null &amp;&amp; args.length &gt; 0){ conf.setNumWorkers(3); StormSubmitter.submitTopology(args[0], conf, topologyBuilder.createTopology()); }else{ conf.setMaxTaskParallelism(10); LocalCluster localCluster = new LocalCluster(); localCluster.submitTopology(&quot;word-count&quot;, conf, topologyBuilder.createTopology()); Thread.sleep(10000); localCluster.shutdown(); } } UI界面 Num workers = 3 &gt; 通过conf.setNumWorkers(3);进行设置 Num executors = 11 topologyBuilder.setSpout(&quot;sentenceSpout&quot;, new RandomSentenceSpout(),2).setNumTasks(4); topologyBuilder.setBolt(&quot;sentenceSplitBolt&quot;, new
+  </div>
+  
+  <footer>
+    <ul class="pager">
+      <li class="next"><a href="https://darren2013.github.io/post/storm%20UI%E8%A7%A3%E6%9E%90/">Read more <span aria-hidden="true">&raquo;</span></a></li>
+    </ul>
+  </footer>
+  
+</article>
+
+  
 </section>
   </main>
   <footer class="container global-footer">
