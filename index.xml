@@ -34,7 +34,7 @@
 
 &lt;h2 id=&#34;cluster-summary&#34;&gt;Cluster Summary&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;./1472743930681.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../1472743930681.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;topology代码设置&#34;&gt;Topology代码设置&lt;/h2&gt;
 
@@ -66,7 +66,7 @@
 
 &lt;h2 id=&#34;ui界面&#34;&gt;UI界面&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;./1472961269432.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../1472961269432.png&#34; alt=&#34;Alt text&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Num workers = 3
